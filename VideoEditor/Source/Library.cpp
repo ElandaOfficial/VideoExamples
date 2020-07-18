@@ -32,6 +32,8 @@
 Library::Library (Player& player, foleys::VideoEngine& engine)
   : videoEngine (engine)
 {
+    ignoreUnused (videoEngine);
+
     directoryThread.startThread (3);
 
     tabs.addTab (NEEDS_TRANS ("Movies"), Colours::darkgrey,
@@ -62,10 +64,6 @@ Library::Library (Player& player, foleys::VideoEngine& engine)
                                 std::make_unique<WildcardFileFilter> ("*", "*", "All")), true);
 
     addAndMakeVisible (tabs);
-}
-
-Library::~Library()
-{
 }
 
 void Library::paint (Graphics& g)
@@ -109,7 +107,7 @@ void Library::MediaList::fileDoubleClicked (const File& file)
     player.setAuditionFile (file);
 }
 
-void Library::MediaList::fileClicked (const File& file, const MouseEvent&)
+void Library::MediaList::fileClicked (const File&, const MouseEvent&)
 {
     player.stopAudition();
 }
