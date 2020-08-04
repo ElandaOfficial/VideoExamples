@@ -4,3 +4,4 @@
 **/!JuceLibraryCode/AppConfig.h
 libraries/build/
 /build/
+**/compile_commands.json
