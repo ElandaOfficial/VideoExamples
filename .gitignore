@@ -5,3 +5,5 @@
 libraries/build/
 /build/
 **/compile_commands.json
+build
+cmake-build-*

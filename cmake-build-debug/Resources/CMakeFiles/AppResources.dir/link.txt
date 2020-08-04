@@ -1,2 +1,0 @@
-/usr/bin/ar qc libAppResources.a  CMakeFiles/AppResources.dir/juce_binarydata_AppResources/JuceLibraryCode/BinaryData1.cpp.o CMakeFiles/AppResources.dir/juce_binarydata_AppResources/JuceLibraryCode/BinaryData2.cpp.o
-/usr/bin/ranlib libAppResources.a
