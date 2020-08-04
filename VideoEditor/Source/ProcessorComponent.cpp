@@ -24,7 +24,6 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "ProcessorComponent.h"
 #include "Player.h"
 
@@ -32,7 +31,7 @@
 
 namespace IDs
 {
-    static Identifier collapsed { "collapsed" };
+    static juce::Identifier collapsed { "collapsed" };
 }
 
 AutomationComponent::AutomationComponent (const juce::String& titleToUse,
@@ -74,21 +73,21 @@ AutomationComponent::~AutomationComponent()
         processorControls->removeChangeListener (this);
 }
 
-void AutomationComponent::paint (Graphics& g)
+void AutomationComponent::paint (juce::Graphics& g)
 {
-    g.setColour (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
+    g.setColour (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 6.0);
 
-    g.setColour (Colours::grey);
+    g.setColour (juce::Colours::grey);
     g.drawRoundedRectangle (getLocalBounds().toFloat(), 6.0, 1);
 
-    g.setColour (Colours::silver);
+    g.setColour (juce::Colours::silver);
     g.setFont (16.0f);
 
     auto area = getLocalBounds();
 
     g.drawText (title, area.removeFromTop (24).reduced (33, 3),
-                Justification::left, true);
+                juce::Justification::left, true);
 }
 
 void AutomationComponent::resized()
@@ -116,14 +115,14 @@ void AutomationComponent::resized()
     }
 }
 
-void AutomationComponent::mouseDrag (const MouseEvent& event)
+void AutomationComponent::mouseDrag (const juce::MouseEvent& event)
 {
     if (event.getDistanceFromDragStart() < 5)
         return;
 
     if (auto* processorController = dynamic_cast<foleys::ProcessorController*>(&controller))
     {
-        if (auto* dndContainer = findParentComponentOfClass<DragAndDropContainer>())
+        if (auto* dndContainer = findParentComponentOfClass<juce::DragAndDropContainer>())
         {
             processorController->readPluginStatesIntoValueTree();
             dndContainer->startDragging (processorController->getProcessorState().toXmlString(), this);
@@ -134,7 +133,7 @@ void AutomationComponent::mouseDrag (const MouseEvent& event)
 int AutomationComponent::getHeightForWidth(int width) const
 {
     // todo: adapt to width
-    ignoreUnused (width);
+    juce::ignoreUnused (width);
 
     auto height = 40 * controller.getNumParameters();
 
@@ -183,8 +182,8 @@ public:
     ParameterSlider (foleys::ParameterAutomation& parameter, foleys::TimeCodeAware& timeReference)
     {
         const auto numSteps = parameter.getNumSteps();
-
-        NormalisableRange<double> range;
+    
+        juce::NormalisableRange<double> range;
         if (numSteps > 0)
             range.interval = 1.0 / numSteps;
 
@@ -207,12 +206,12 @@ public:
         };
 
         valueSlider.textFromValueFunction = [&parameter](double value) { return parameter.getText (float(value)); };
-        valueSlider.valueFromTextFunction = [&parameter](String text) { return parameter.getValueForText (text); };
+        valueSlider.valueFromTextFunction = [&parameter](juce::String text) { return parameter.getValueForText (text); };
 
         valueSlider.setNormalisableRange (range);
 
-        auto colour = Colour::fromString (parameter.getParameterProperties().getWithDefault ("Colour", "ffa0a0a0").toString());
-        valueSlider.setColour (Slider::trackColourId, colour);
+        auto colour = juce::Colour::fromString (parameter.getParameterProperties().getWithDefault ("Colour", "ffa0a0a0").toString());
+        valueSlider.setColour (juce::Slider::trackColourId, colour);
     }
 
     void setValue (double value) override
@@ -232,7 +231,7 @@ public:
     }
 
 private:
-    Slider valueSlider { Slider::LinearHorizontal, Slider::TextBoxRight };
+    juce::Slider valueSlider { juce::Slider::LinearHorizontal, juce::Slider::TextBoxRight };
     bool dragging = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
@@ -255,7 +254,7 @@ public:
     {
         auto numChoices = choice.getNumItems();
         if (numChoices > 1)
-            choice.setSelectedItemIndex (roundToInt (value * (numChoices - 1.0)));
+            choice.setSelectedItemIndex (juce::roundToInt (value * (numChoices - 1.0)));
         else
             choice.setSelectedItemIndex (0);
     }
@@ -264,7 +263,7 @@ public:
     {
         auto numChoices = choice.getNumItems();
         if (numChoices > 1)
-            return roundToInt (choice.getSelectedItemIndex() / (numChoices - 1.0));
+            return juce::roundToInt (choice.getSelectedItemIndex() / (numChoices - 1.0));
 
         return 0;
     }
@@ -275,7 +274,7 @@ public:
     }
 
 private:
-    ComboBox choice;
+    juce::ComboBox choice;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterChoice)
 };
@@ -297,7 +296,7 @@ public:
 
     void setValue (double value) override
     {
-        button.setToggleState (value > 0.5, dontSendNotification);
+        button.setToggleState (value > 0.5, juce::dontSendNotification);
     }
 
     double getValue() const override
@@ -311,7 +310,7 @@ public:
     }
 
 private:
-    TextButton button;
+    juce::TextButton button;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSwitch)
 };
@@ -324,9 +323,9 @@ AutomationComponent::ParameterComponent::ParameterComponent (foleys::TimeCodeAwa
   : timeReference (reference),
     parameter (parameterToControl)
 {
-    prev.setConnectedEdges (TextButton::ConnectedOnRight);
-    next.setConnectedEdges (TextButton::ConnectedOnRight | TextButton::ConnectedOnLeft);
-    add.setConnectedEdges (TextButton::ConnectedOnLeft);
+    prev.setConnectedEdges (juce::TextButton::ConnectedOnRight);
+    next.setConnectedEdges (juce::TextButton::ConnectedOnRight | juce::TextButton::ConnectedOnLeft);
+    add.setConnectedEdges (juce::TextButton::ConnectedOnLeft);
 
     addAndMakeVisible (prev);
     addAndMakeVisible (next);
@@ -372,11 +371,11 @@ AutomationComponent::ParameterComponent::ParameterComponent (foleys::TimeCodeAwa
 
 }
 
-void AutomationComponent::ParameterComponent::paint (Graphics& g)
+void AutomationComponent::ParameterComponent::paint (juce::Graphics& g)
 {
     auto area = getLocalBounds().reduced (3);
-    g.setColour (Colours::silver);
-    g.drawFittedText (parameter.getName(), area, Justification::topLeft, 1);
+    g.setColour (juce::Colours::silver);
+    g.drawFittedText (parameter.getName(), area, juce::Justification::topLeft, 1);
 }
 
 void AutomationComponent::ParameterComponent::resized()
@@ -398,25 +397,25 @@ void AutomationComponent::ParameterComponent::updateForTime (double pts)
 AutomationComponent::ProcessorControls::ProcessorControls (foleys::ProcessorController& controllerToUse)
   : controller (controllerToUse)
 {
-    editorButton.setConnectedEdges (Button::ConnectedOnRight);
-    removeButton.setConnectedEdges (Button::ConnectedOnRight);
-    collapseButton.setConnectedEdges (Button::ConnectedOnLeft);
+    editorButton.setConnectedEdges (juce::Button::ConnectedOnRight);
+    removeButton.setConnectedEdges (juce::Button::ConnectedOnRight);
+    collapseButton.setConnectedEdges (juce::Button::ConnectedOnLeft);
 
     activeButton.setClickingTogglesState (true);
-    activeButton.setToggleState (controller.isActive(), dontSendNotification);
+    activeButton.setToggleState (controller.isActive(), juce::dontSendNotification);
     addAndMakeVisible (activeButton);
     activeButton.onStateChange = [&]
     {
         controller.setActive (activeButton.getToggleState());
     };
-    activeButton.setColour (TextButton::buttonOnColourId, Colours::green);
+    activeButton.setColour (juce::TextButton::buttonOnColourId, juce::Colours::green);
 
     addChildComponent (editorButton);
     if (auto* processor = controller.getAudioProcessor())
     {
         if (processor->hasEditor())
         {
-            removeButton.setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
+            removeButton.setConnectedEdges (juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
 
             editorButton.setVisible (processor->hasEditor());
             editorButton.onClick = [&]
@@ -430,7 +429,7 @@ AutomationComponent::ProcessorControls::ProcessorControls (foleys::ProcessorCont
     }
 
     collapseButton.setClickingTogglesState (true);
-    collapseButton.setToggleState (isCollapsed(), dontSendNotification);
+    collapseButton.setToggleState (isCollapsed(), juce::dontSendNotification);
     addAndMakeVisible (collapseButton);
     collapseButton.onClick = [&]
     {
@@ -452,7 +451,7 @@ AutomationComponent::ProcessorControls::~ProcessorControls()
     controller.getOwningClipDescriptor().removeListener (this);
 }
 
-void AutomationComponent::ProcessorControls::showProcessorEditor (AudioProcessorEditor* editor, const String& editorTitle)
+void AutomationComponent::ProcessorControls::showProcessorEditor (juce::AudioProcessorEditor* editor, const juce::String& editorTitle)
 {
     audioProcessorWindow = std::make_unique<AudioProcessorWindow>(editor, editorTitle);
     audioProcessorWindow->centreAroundComponent (getTopLevelComponent(), audioProcessorWindow->getWidth(), audioProcessorWindow->getHeight());
@@ -487,8 +486,8 @@ foleys::ProcessorController& AutomationComponent::ProcessorControls::getProcesso
 
 //==============================================================================
 
-AutomationComponent::AudioProcessorWindow::AudioProcessorWindow (AudioProcessorEditor* editor, const String& titleToUse)
-  : DocumentWindow (titleToUse, Colours::darkgrey, DocumentWindow::closeButton, true)
+AutomationComponent::AudioProcessorWindow::AudioProcessorWindow (juce::AudioProcessorEditor* editor, const juce::String& titleToUse)
+  : DocumentWindow (titleToUse, juce::Colours::darkgrey, DocumentWindow::closeButton, true)
 {
     setAlwaysOnTop (true);
     setWantsKeyboardFocus (false);

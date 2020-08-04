@@ -26,16 +26,16 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 class Player;
 
 //==============================================================================
 /*
 */
-class AutomationComponent   : public Component,
-                              public ChangeBroadcaster,
-                              private ChangeListener,
+class AutomationComponent   : public juce::Component,
+                              public juce::ChangeBroadcaster,
+                              private juce::ChangeListener,
                               private foleys::ControllableBase::Listener,
                               private foleys::TimeCodeAware::Listener
 {
@@ -45,10 +45,10 @@ public:
                          Player& player);
     ~AutomationComponent() override;
 
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
-    void mouseDrag (const MouseEvent&) override;
+    void mouseDrag (const juce::MouseEvent&) override;
 
     int getHeightForWidth(int width) const;
 
@@ -65,7 +65,7 @@ public:
     public:
         ParameterComponent (foleys::TimeCodeAware& timeReference, foleys::ParameterAutomation& parameter, Player& player);
 
-        void paint (Graphics&) override;
+        void paint (juce::Graphics&) override;
         void resized() override;
 
         void valueChanged (foleys::ProcessorParameter&, double) override {}
@@ -95,9 +95,9 @@ public:
 
         std::unique_ptr<ParameterWidget> widget;
 
-        TextButton prev { "<" };
-        TextButton next { ">" };
-        TextButton add  { "+" };
+        juce::TextButton prev { "<" };
+        juce::TextButton next { ">" };
+        juce::TextButton add  { "+" };
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterComponent)
     };
 private:
@@ -105,15 +105,15 @@ private:
     foleys::ControllableBase&    controller;
 
     std::vector<std::unique_ptr<ParameterComponent>> parameterComponents;
-
-    String title;
+    
+    juce::String title;
 
     //==============================================================================
 
-    class AudioProcessorWindow  : public DocumentWindow
+    class AudioProcessorWindow  : public juce::DocumentWindow
     {
     public:
-        AudioProcessorWindow (AudioProcessorEditor* editor, const String& title);
+        AudioProcessorWindow (juce::AudioProcessorEditor* editor, const juce::String& title);
         void closeButtonPressed() override;
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioProcessorWindow)
@@ -129,7 +129,7 @@ private:
         ProcessorControls (foleys::ProcessorController& controller);
         ~ProcessorControls() override;
 
-        void showProcessorEditor (AudioProcessorEditor* editor, const String& title);
+        void showProcessorEditor (juce::AudioProcessorEditor* editor, const juce::String& title);
         void resized() override;
 
         bool isCollapsed() const;
@@ -141,11 +141,11 @@ private:
 
     private:
         foleys::ProcessorController&    controller;
-
-        TextButton activeButton   { "A" };
-        TextButton editorButton   { "E" };
-        TextButton collapseButton { "v" };
-        TextButton removeButton   { "X" };
+    
+        juce::TextButton activeButton   { "A" };
+        juce::TextButton editorButton   { "E" };
+        juce::TextButton collapseButton { "v" };
+        juce::TextButton removeButton   { "X" };
 
         std::unique_ptr<AudioProcessorWindow> audioProcessorWindow;
 

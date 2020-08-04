@@ -26,27 +26,27 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 class AutomationComponent;
 class Player;
 
-class ClipProcessorProperties  : public Component,
-                                 public ChangeListener,
+class ClipProcessorProperties  : public juce::Component,
+                                 public juce::ChangeListener,
                                  private foleys::ClipDescriptor::Listener
 {
 public:
     ClipProcessorProperties (foleys::VideoEngine& engine, std::shared_ptr<foleys::ClipDescriptor> clip, Player& player, bool video);
     ~ClipProcessorProperties() override;
 
-    void paint (Graphics& g) override;
+    void paint (juce::Graphics& g) override;
 
     void resized() override;
 
     void processorControllerAdded() override;
     void processorControllerToBeDeleted (const foleys::ProcessorController* toBeDeleted) override;
 
-    void changeListenerCallback (ChangeBroadcaster*) override;
+    void changeListenerCallback (juce::ChangeBroadcaster*) override;
 
 private:
 
@@ -56,9 +56,9 @@ private:
     Player& player;
     std::weak_ptr<foleys::ClipDescriptor> clip;
     std::vector<std::unique_ptr<AutomationComponent>> editors;
-
-    TextButton processorSelect { "Add Effect" };
-    Viewport   scroller;
+    
+    juce::TextButton processorSelect { "Add Effect" };
+    juce::Viewport   scroller;
     Component  container;
 
     bool video = false;

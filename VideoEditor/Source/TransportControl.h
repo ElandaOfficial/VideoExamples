@@ -26,33 +26,33 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_gui_basics/juce_gui_basics.h>
 
 //==============================================================================
 /*
 */
-class TransportControl    : public Component,
-                            private ChangeListener,
-                            private Timer
+class TransportControl    : public juce::Component,
+                            private juce::ChangeListener,
+                            private juce::Timer
 {
 public:
-    TransportControl (Player& player);
+    explicit TransportControl (Player& player);
     ~TransportControl() override;
 
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
     void timerCallback() override;
 
-    void changeListenerCallback (ChangeBroadcaster* sender) override;
+    void changeListenerCallback (juce::ChangeBroadcaster* sender) override;
 
 private:
     Player& player;
-
-    TextButton zero { NEEDS_TRANS ("Return") };
-    TextButton stop { NEEDS_TRANS ("Stop") };
-    TextButton play { NEEDS_TRANS ("Play") };
-    TextButton settings { NEEDS_TRANS ("Settings") };
+    
+    juce::TextButton zero { NEEDS_TRANS ("Return") };
+    juce::TextButton stop { NEEDS_TRANS ("Stop") };
+    juce::TextButton play { NEEDS_TRANS ("Play") };
+    juce::TextButton settings { NEEDS_TRANS ("Settings") };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TransportControl)
 };

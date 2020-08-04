@@ -24,16 +24,14 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "Player.h"
 #include "Properties.h"
 #include "TimeLine.h"
 
 namespace IDs
 {
-    static Identifier videoLine { "videoLine" };
-    static Identifier audioLine { "audioLine" };
+    static juce::Identifier videoLine { "videoLine" };
+    static juce::Identifier audioLine { "audioLine" };
 }
 
 //==============================================================================
@@ -59,15 +57,15 @@ TimeLine::~TimeLine()
     edit = nullptr;
 }
 
-void TimeLine::paint (Graphics& g)
+void TimeLine::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId).darker());
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId).darker());
 
-    g.setColour (Colours::darkgrey);
+    g.setColour (juce::Colours::darkgrey);
     for (int i=0; i < numVideoLines; ++i)
         g.fillRect (0, margin + i * (videoHeight + margin), getWidth(), videoHeight);
 
-    g.setColour (Colours::darkgrey.darker());
+    g.setColour (juce::Colours::darkgrey.darker());
     for (int i=0; i < numAudioLines; ++i)
         g.fillRect (0, numVideoLines * (videoHeight + margin) + margin + i * (audioHeight + margin), getWidth(), audioHeight);
 }
@@ -105,25 +103,25 @@ void TimeLine::resized()
 
 void TimeLine::timecodeChanged (int64_t, double seconds)
 {
-    ignoreUnused (time);
+    juce::ignoreUnused (time);
     auto tx = getXFromTime (seconds);
     timemarker.setBounds (tx, 0, 3, getHeight());
 }
 
-void TimeLine::mouseDown (const MouseEvent& event)
+void TimeLine::mouseDown (const juce::MouseEvent& event)
 {
     player.setPosition (getTimeFromX (event.x));
 }
 
-bool TimeLine::keyPressed (const KeyPress& key)
+bool TimeLine::keyPressed (const juce::KeyPress& key)
 {
-    if (key.isKeyCode (KeyPress::leftKey))
+    if (key.isKeyCode (juce::KeyPress::leftKey))
     {
         player.previousFrame();
         return true;
     }
 
-    if (key.isKeyCode (KeyPress::rightKey))
+    if (key.isKeyCode (juce::KeyPress::rightKey))
     {
         player.nextFrame();
         return true;
@@ -132,12 +130,12 @@ bool TimeLine::keyPressed (const KeyPress& key)
     return false;
 }
 
-bool TimeLine::isInterestedInFileDrag (const StringArray&)
+bool TimeLine::isInterestedInFileDrag (const juce::StringArray&)
 {
     return edit != nullptr;
 }
 
-void TimeLine::filesDropped (const StringArray& files, int x, int y)
+void TimeLine::filesDropped (const juce::StringArray& files, int x, int y)
 {
     if (files.isEmpty() || edit == nullptr)
         return;
@@ -160,13 +158,13 @@ void TimeLine::itemDropped (const SourceDetails &dragSourceDetails)
     if (edit == nullptr)
         return;
 
-    if (auto* source = dynamic_cast<FileTreeComponent*> (dragSourceDetails.sourceComponent.get()))
+    if (auto* source = dynamic_cast<juce::FileTreeComponent*> (dragSourceDetails.sourceComponent.get()))
     {
-        auto clip = videoEngine.createClipFromFile (URL (source->getSelectedFile()));
+        auto clip = videoEngine.createClipFromFile (juce::URL (source->getSelectedFile()));
 
         if (clip.get() == nullptr)
         {
-            AlertWindow::showNativeDialogBox (NEEDS_TRANS ("Loading failed"), NEEDS_TRANS (""), true);
+            juce::AlertWindow::showNativeDialogBox (NEEDS_TRANS ("Loading failed"), NEEDS_TRANS (""), true);
             return;
         }
 
@@ -181,13 +179,13 @@ void TimeLine::itemDropped (const SourceDetails &dragSourceDetails)
         addClipToEdit (clip, getTimeFromX (dragSourceDetails.localPosition.x), dragSourceDetails.localPosition.y);
 }
 
-bool TimeLine::isInterestedInTextDrag (const String& text)
+bool TimeLine::isInterestedInTextDrag (const juce::String& text)
 {
     juce::URL url (text);
     return url.isWellFormed();
 }
 
-void TimeLine::textDropped (const String& text, int x, int y)
+void TimeLine::textDropped (const juce::String& text, int x, int y)
 {
     if (edit.get() == nullptr)
         return;
@@ -386,14 +384,14 @@ int TimeLine::getAudioLine (const std::shared_ptr<foleys::ClipDescriptor> descri
 void TimeLine::setVideoLine (std::shared_ptr<foleys::ClipDescriptor> descriptor, int lane) const
 {
     descriptor->getStatusTree().setProperty (IDs::videoLine,
-                                             jlimit (0, numVideoLines - 1, lane),
+                                             juce::jlimit (0, numVideoLines - 1, lane),
                                              videoEngine.getUndoManager());
 }
 
 void TimeLine::setAudioLine (std::shared_ptr<foleys::ClipDescriptor> descriptor, int lane) const
 {
     descriptor->getStatusTree().setProperty (IDs::audioLine,
-                                             jlimit (0, numAudioLines - 1, lane),
+                                             juce::jlimit (0, numAudioLines - 1, lane),
                                              videoEngine.getUndoManager());
 }
 
@@ -404,24 +402,24 @@ double TimeLine::getSampleRate() const
 
 void TimeLine::valueTreePropertyChanged (juce::ValueTree&, const juce::Identifier&)
 {
-    MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->resized(); });
+    juce::MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->resized(); });
 }
 
 void TimeLine::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree&)
 {
-    MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->restoreClipComponents(); });
+    juce::MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->restoreClipComponents(); });
 }
 
 void TimeLine::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree&, int)
 {
-    MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->restoreClipComponents(); });
+    juce::MessageManager::callAsync ([safeComponent = SafePointer<TimeLine> (this)] () mutable { if (safeComponent) safeComponent->restoreClipComponents(); });
 }
 
 //==============================================================================
 
 TimeLine::ClipComponent::ClipComponent (TimeLine& tl,
                                         std::shared_ptr<foleys::ClipDescriptor> clipToUse,
-                                        ThreadPool&, bool video)
+                                        juce::ThreadPool&, bool video)
   : clip (clipToUse),
     timeline (tl)
 {
@@ -441,7 +439,7 @@ TimeLine::ClipComponent::ClipComponent (TimeLine& tl,
     }
 
     updateProcessorList();
-    processorSelect.setColour (ComboBox::backgroundColourId, Colours::black.withAlpha (0.2f));
+    processorSelect.setColour (juce::ComboBox::backgroundColourId, juce::Colours::black.withAlpha (0.2f));
     addAndMakeVisible (processorSelect);
     processorSelect.onChange = [&]
     {
@@ -458,12 +456,12 @@ TimeLine::ClipComponent::ClipComponent (TimeLine& tl,
 
             if (isVideoClip())
             {
-                if (isPositiveAndBelow (index, clip->getVideoProcessors().size()))
+                if (juce::isPositiveAndBelow (index, clip->getVideoProcessors().size()))
                     updateParameterGraphs (*clip->getVideoProcessors() [size_t(index)]);
             }
             else
             {
-                if (isPositiveAndBelow (index, clip->getAudioProcessors().size()))
+                if (juce::isPositiveAndBelow (index, clip->getAudioProcessors().size()))
                     updateParameterGraphs (*clip->getAudioProcessors() [size_t(index)]);
             }
         }
@@ -478,15 +476,15 @@ TimeLine::ClipComponent::~ClipComponent()
         clip->removeListener (this);
 }
 
-void TimeLine::ClipComponent::paint (Graphics& g)
+void TimeLine::ClipComponent::paint (juce::Graphics& g)
 {
     bool selected = timeline.getSelectedClip() == clip;
 
-    g.fillAll (Colours::darkgrey);
+    g.fillAll (juce::Colours::darkgrey);
 
-    auto colour = isVideoClip() ? Colours::orange : Colours::darkgreen;
+    auto colour = isVideoClip() ? juce::Colours::orange : juce::Colours::darkgreen;
 
-    g.setColour (highlight ? Colours::red : (selected ? colour : colour.darker()));
+    g.setColour (highlight ? juce::Colours::red : (selected ? colour : colour.darker()));
     g.fillRoundedRectangle (getLocalBounds().reduced (1).toFloat(), 5.0);
 
     if (selected)
@@ -498,7 +496,7 @@ void TimeLine::ClipComponent::paint (Graphics& g)
     if (clip == nullptr)
         return;
 
-    g.drawFittedText (clip->getDescription(), 5, 3, 180, 18, Justification::left, 1);
+    g.drawFittedText (clip->getDescription(), 5, 3, 180, 18, juce::Justification::left, 1);
 
     if (filmstrip.get() != nullptr)
         filmstrip->setAlpha (clip->getVideoVisible() ? 1.0f : 0.5f);
@@ -544,15 +542,15 @@ double TimeLine::ClipComponent::getRightTime() const
     return 0;
 }
 
-void TimeLine::ClipComponent::mouseMove (const MouseEvent& event)
+void TimeLine::ClipComponent::mouseMove (const juce::MouseEvent& event)
 {
     if (event.x > getWidth() - 5 || event.x < 5)
-        setMouseCursor (MouseCursor::LeftRightResizeCursor);
+        setMouseCursor (juce::MouseCursor::LeftRightResizeCursor);
     else
-        setMouseCursor (MouseCursor::DraggingHandCursor);
+        setMouseCursor (juce::MouseCursor::DraggingHandCursor);
 }
 
-void TimeLine::ClipComponent::mouseDown (const MouseEvent& event)
+void TimeLine::ClipComponent::mouseDown (const juce::MouseEvent& event)
 {
     wasSelected = timeline.getSelectedClip() == clip;
 
@@ -567,7 +565,7 @@ void TimeLine::ClipComponent::mouseDown (const MouseEvent& event)
         dragmode = dragPosition;
 }
 
-void TimeLine::ClipComponent::mouseDrag (const MouseEvent& event)
+void TimeLine::ClipComponent::mouseDrag (const juce::MouseEvent& event)
 {
     auto* parent = getParentComponent();
     if (parent == nullptr)
@@ -606,7 +604,7 @@ void TimeLine::ClipComponent::mouseDrag (const MouseEvent& event)
     parent->resized();
 }
 
-void TimeLine::ClipComponent::mouseUp (const MouseEvent& event)
+void TimeLine::ClipComponent::mouseUp (const juce::MouseEvent& event)
 {
     dragmode = notDragging;
 
@@ -614,14 +612,14 @@ void TimeLine::ClipComponent::mouseUp (const MouseEvent& event)
         timeline.player.setPosition (timeline.getTimeFromX (timeline.getLocalPoint (this, event.getPosition()).getX()));
 }
 
-bool TimeLine::ClipComponent::keyPressed (const KeyPress& key)
+bool TimeLine::ClipComponent::keyPressed (const juce::KeyPress& key)
 {
     return timeline.keyPressed (key);
 }
 
 bool TimeLine::ClipComponent::isInterestedInDragSource (const SourceDetails &dragSourceDetails)
 {
-    auto tree = ValueTree::fromXml (dragSourceDetails.description.toString());
+    auto tree = juce::ValueTree::fromXml (dragSourceDetails.description.toString());
     if (!tree.isValid())
         return false;
 
@@ -646,7 +644,7 @@ void TimeLine::ClipComponent::itemDragExit (const SourceDetails&)
 void TimeLine::ClipComponent::itemDropped (const SourceDetails &dragSourceDetails)
 {
     highlight = false;
-    auto tree = ValueTree::fromXml (dragSourceDetails.description.toString());
+    auto tree = juce::ValueTree::fromXml (dragSourceDetails.description.toString());
     if (!tree.isValid() || clip == nullptr)
         return;
 
@@ -672,7 +670,7 @@ void TimeLine::ClipComponent::updateProcessorList()
             const auto name = processor->getName();
             processorSelect.addItem (name, index);
             if (name == current)
-                processorSelect.setSelectedId (index, sendNotification);
+                processorSelect.setSelectedId (index, juce::sendNotification);
 
             ++index;
         }
@@ -690,7 +688,7 @@ void TimeLine::ClipComponent::updateProcessorList()
             const auto name = processor->getName();
             processorSelect.addItem (name, index);
             if (name == current)
-                processorSelect.setSelectedId (index, sendNotification);
+                processorSelect.setSelectedId (index, juce::sendNotification);
 
             ++index;
         }
@@ -751,7 +749,7 @@ void TimeLine::ClipComponent::ParameterGraph::setColour (juce::Colour colourToUs
     repaint();
 }
 
-void TimeLine::ClipComponent::ParameterGraph::paint (Graphics& g)
+void TimeLine::ClipComponent::ParameterGraph::paint (juce::Graphics& g)
 {
     g.setColour (colour);
     auto lastX = 1;
@@ -771,7 +769,7 @@ void TimeLine::ClipComponent::ParameterGraph::paint (Graphics& g)
     g.drawLine (lastX, lastY, mapFromTime (end), mapFromValue (automation.getValueForTime (end)), 2.0f);
 }
 
-void TimeLine::ClipComponent::ParameterGraph::mouseDown (const MouseEvent& event)
+void TimeLine::ClipComponent::ParameterGraph::mouseDown (const juce::MouseEvent& event)
 {
     draggingIndex = findClosestKeyFrame (event.x, event.y);
 
@@ -796,25 +794,25 @@ void TimeLine::ClipComponent::ParameterGraph::mouseDown (const MouseEvent& event
     }
 }
 
-void TimeLine::ClipComponent::ParameterGraph::mouseDrag (const MouseEvent& event)
+void TimeLine::ClipComponent::ParameterGraph::mouseDrag (const juce::MouseEvent& event)
 {
     if (automation.getKeyframes().empty())
     {
         automation.setValue (mapToValue (event.y));
     }
-    else if (isPositiveAndBelow (draggingIndex, automation.getKeyframes().size()))
+    else if (juce::isPositiveAndBelow (draggingIndex, automation.getKeyframes().size()))
     {
         const auto time = mapToTime (event.x);
         const auto value = mapToValue (event.y);
 
         automation.setKeyframe (draggingIndex, time, value);
-        draggingIndex = findClosestKeyFrame (event.x, jlimit (1, getHeight() - 2, event.y));
+        draggingIndex = findClosestKeyFrame (event.x, juce::jlimit (1, getHeight() - 2, event.y));
     }
 
     repaint();
 }
 
-void TimeLine::ClipComponent::ParameterGraph::mouseUp (const MouseEvent&)
+void TimeLine::ClipComponent::ParameterGraph::mouseUp (const juce::MouseEvent&)
 {
     draggingIndex = -1;
 }
@@ -847,17 +845,17 @@ int TimeLine::ClipComponent::ParameterGraph::findClosestKeyFrame (int x, int y) 
 
 int TimeLine::ClipComponent::ParameterGraph::mapFromTime (double time) const
 {
-    return roundToInt (jmap (time, owner.getLeftTime(), owner.getRightTime(), 1.0, getWidth() - 2.0));
+    return juce::roundToInt (juce::jmap (time, owner.getLeftTime(), owner.getRightTime(), 1.0, getWidth() - 2.0));
 }
 
 int TimeLine::ClipComponent::ParameterGraph::mapFromValue (double value) const
 {
-    return roundToInt (jmap (value, getHeight()-1.0, 1.0));
+    return juce::roundToInt (juce::jmap (value, getHeight()-1.0, 1.0));
 }
 
 double TimeLine::ClipComponent::ParameterGraph::mapToTime (int x) const
 {
-    return jmap (double (x), 1.0, getWidth() - 2.0, owner.getLeftTime(), owner.getRightTime());
+    return juce::jmap (double (x), 1.0, getWidth() - 2.0, owner.getLeftTime(), owner.getRightTime());
 }
 
 double TimeLine::ClipComponent::ParameterGraph::mapToValue (int y) const

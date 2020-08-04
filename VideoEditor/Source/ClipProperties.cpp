@@ -24,10 +24,10 @@
  ==============================================================================
  */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "ClipProperties.h"
 #include "ProcessorComponent.h"
 
+#include <ff_meters/ff_meters.h>
 
 ClipProcessorProperties::ClipProcessorProperties (foleys::VideoEngine& engineToUse,
                                                   std::shared_ptr<foleys::ClipDescriptor> clipToUse,
@@ -46,13 +46,13 @@ ClipProcessorProperties::ClipProcessorProperties (foleys::VideoEngine& engineToU
             auto lockedClip = clip.lock();
             if (lockedClip == nullptr)
                 return;
-
-            PopupMenu menu;
+  
+            juce::PopupMenu menu;
             auto& manager = engine.getVideoPluginManager();
             manager.populatePluginSelection (menu);
 
             auto description = manager.getPluginDescriptionFromMenuID (menu.show());
-            String error;
+            juce::String error;
             auto processor = manager.createVideoPluginInstance (description, error);
             if (processor != nullptr)
                 lockedClip->addVideoProcessor (std::move (processor));
@@ -67,17 +67,17 @@ ClipProcessorProperties::ClipProcessorProperties (foleys::VideoEngine& engineToU
             auto lockedClip = clip.lock();
             if (lockedClip == nullptr)
                 return;
-
-            PopupMenu menu;
+  
+            juce::PopupMenu menu;
             auto& manager = engine.getAudioPluginManager();
             auto plugins = manager.getKnownPluginDescriptions();
-            KnownPluginList::addToMenu (menu, plugins, KnownPluginList::sortByManufacturer);
+            juce::KnownPluginList::addToMenu (menu, plugins, juce::KnownPluginList::sortByManufacturer);
 
-            auto selected = KnownPluginList::getIndexChosenByMenu (plugins, menu.show());
-            if (isPositiveAndBelow (selected, plugins.size()) == false)
+            auto selected = juce::KnownPluginList::getIndexChosenByMenu (plugins, menu.show());
+            if (juce::isPositiveAndBelow (selected, plugins.size()) == false)
                 return;
-
-            String error;
+  
+            juce::String error;
             auto& owningClip = lockedClip->getOwningClip();
             auto processor = manager.createAudioPluginInstance (plugins.getReference (selected).createIdentifierString(), owningClip.getSampleRate(), owningClip.getDefaultBufferSize(), error);
             if (processor != nullptr)
@@ -138,13 +138,13 @@ ClipProcessorProperties::~ClipProcessorProperties()
         lockedClip->removeListener (this);
 }
 
-void ClipProcessorProperties::paint (Graphics& g)
+void ClipProcessorProperties::paint (juce::Graphics& g)
 {
-    g.setColour (Colours::silver);
+    g.setColour (juce::Colours::silver);
     auto lockedClip = clip.lock();
     if (lockedClip != nullptr)
         g.drawFittedText ((video ? NEEDS_TRANS ("Video: ") : NEEDS_TRANS ("Audio: ")) + lockedClip->getDescription(),
-                          getLocalBounds().removeFromTop (36).reduced (5), Justification::left, 1);
+                          getLocalBounds().removeFromTop (36).reduced (5), juce::Justification::left, 1);
 }
 
 void ClipProcessorProperties::resized()
@@ -163,8 +163,8 @@ void ClipProcessorProperties::resized()
     int needed = 0;
     for (auto& editor : editors)
         needed += editor->getHeightForWidth (area.getWidth());
-
-    Rectangle<int> childRect (0, 0, area.getWidth() - scroller.getScrollBarThickness(), needed);
+    
+    juce::Rectangle<int> childRect (0, 0, area.getWidth() - scroller.getScrollBarThickness(), needed);
     container.setBounds (childRect);
 
     for (auto& editor : editors)
@@ -192,7 +192,7 @@ void ClipProcessorProperties::processorControllerToBeDeleted (const foleys::Proc
     resized();
 }
 
-void ClipProcessorProperties::changeListenerCallback (ChangeBroadcaster*)
+void ClipProcessorProperties::changeListenerCallback (juce::ChangeBroadcaster*)
 {
     resized();
 }

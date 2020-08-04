@@ -22,22 +22,23 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "MainComponent.h"
 
+#include <juce_core/juce_core.h>
+
 //==============================================================================
-class VideoEditorApplication  : public JUCEApplication
+class VideoEditorApplication  : public juce::JUCEApplication
 {
 public:
     //==============================================================================
     VideoEditorApplication() {}
 
-    const String getApplicationName() override       { return ProjectInfo::projectName; }
-    const String getApplicationVersion() override    { return ProjectInfo::versionString; }
+    const juce::String getApplicationName() override       { return PROJECT_INFO_NAME; }
+    const juce::String getApplicationVersion() override    { return PROJECT_INFO_VERSION; }
     bool moreThanOneInstanceAllowed() override       { return false; }
 
     //==============================================================================
-    void initialise ([[maybe_unused]]const String& commandLine) override
+    void initialise ([[maybe_unused]]const juce::String& commandLine) override
     {
         mainWindow.reset (new MainWindow (getApplicationName()));
     }
@@ -56,12 +57,12 @@ public:
             quit();
     }
 
-    void anotherInstanceStarted (const String& commandLine) override
+    void anotherInstanceStarted (const juce::String& commandLine) override
     {
         // When another instance of the app is launched while this one is running,
         // this method is invoked, and the commandLine parameter tells you what
         // the other instance's command-line arguments were.
-        File file (commandLine);
+        juce::File file (commandLine);
         if (mainWindow.get() != nullptr && file.existsAsFile() && file.getFileExtension() == ".videdit")
             mainWindow->getMainComponent().loadEditFile (file);
     }
@@ -71,13 +72,13 @@ public:
         This class implements the desktop window that contains an instance of
         our MainComponent class.
     */
-    class MainWindow    : public DocumentWindow
+    class MainWindow    : public juce::DocumentWindow
     {
     public:
-        MainWindow (String name)  : DocumentWindow (name,
-                                                    Desktop::getInstance().getDefaultLookAndFeel()
-                                                                          .findColour (ResizableWindow::backgroundColourId),
-                                                    DocumentWindow::allButtons)
+        MainWindow (juce::String name)  : DocumentWindow (name,
+                                                          juce::Desktop::getInstance().getDefaultLookAndFeel()
+                                                                                      .findColour (ResizableWindow::backgroundColourId),
+                                                          DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar (true);
             auto* mainComponent = new MainComponent();

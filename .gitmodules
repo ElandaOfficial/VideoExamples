@@ -14,3 +14,9 @@
 [submodule "libraries/x264"]
 	path = libraries/x264
 	url = https://code.videolan.org/videolan/x264.git
+[submodule "libraries/jaut"]
+	path = libraries/jaut
+	url = https://github.com/ElandaSunshine/jaut.git
+[submodule "libraries/juce"]
+	path = libraries/juce
+	url = https://github.com/juce-framework/juce.git

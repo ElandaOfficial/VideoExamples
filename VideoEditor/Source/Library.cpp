@@ -24,7 +24,6 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Library.h"
 #include "Player.h"
 
@@ -36,11 +35,11 @@ Library::Library (Player& player, foleys::VideoEngine& engine)
 
     directoryThread.startThread (3);
 
-    tabs.addTab (NEEDS_TRANS ("Movies"), Colours::darkgrey,
+    tabs.addTab (NEEDS_TRANS ("Movies"), juce::Colours::darkgrey,
                  new MediaList (player,
                                 directoryThread,
-                                File::getSpecialLocation (File::userMoviesDirectory),
-                                std::make_unique<WildcardFileFilter> ("*", "*", "All")), true);
+                                juce::File::getSpecialLocation (juce::File::userMoviesDirectory),
+                                std::make_unique<juce::WildcardFileFilter> ("*", "*", "All")), true);
 
 #if defined (JUCE_MODULE_AVAILABLE_filmstro_av_clip) && JUCE_MODULE_AVAILABLE_filmstro_av_clip==1
     // FILMSTRO:
@@ -51,24 +50,24 @@ Library::Library (Player& player, foleys::VideoEngine& engine)
     tabs.addTab ("Filmstro", Colours::darkgrey, filmstroComponent, true);
 #endif
 
-    tabs.addTab (NEEDS_TRANS ("Music"), Colours::darkgrey,
+    tabs.addTab (NEEDS_TRANS ("Music"), juce::Colours::darkgrey,
                  new MediaList (player,
                                 directoryThread,
-                                File::getSpecialLocation (File::userMusicDirectory),
-                                std::make_unique<WildcardFileFilter> ("*", "*", "All")), true);
+                                juce::File::getSpecialLocation (juce::File::userMusicDirectory),
+                                std::make_unique<juce::WildcardFileFilter> ("*", "*", "All")), true);
 
-    tabs.addTab (NEEDS_TRANS ("Stills"), Colours::darkgrey,
+    tabs.addTab (NEEDS_TRANS ("Stills"), juce::Colours::darkgrey,
                  new MediaList (player,
                                 directoryThread,
-                                File::getSpecialLocation (File::userPicturesDirectory),
-                                std::make_unique<WildcardFileFilter> ("*", "*", "All")), true);
+                                juce::File::getSpecialLocation (juce::File::userPicturesDirectory),
+                                std::make_unique<juce::WildcardFileFilter> ("*", "*", "All")), true);
 
     addAndMakeVisible (tabs);
 }
 
-void Library::paint (Graphics& g)
+void Library::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
 }
 
 void Library::resized()
@@ -77,7 +76,7 @@ void Library::resized()
 }
 
 //==============================================================================
-Library::MediaList::MediaList (Player& playerToUse, TimeSliceThread& readThread, const File& root, std::unique_ptr<FileFilter> filterToUse)
+Library::MediaList::MediaList (Player& playerToUse, juce::TimeSliceThread& readThread, const juce::File& root, std::unique_ptr<juce::FileFilter> filterToUse)
   : player (playerToUse),
     filter (std::move (filterToUse)),
     contents (nullptr, readThread)
@@ -102,12 +101,12 @@ void Library::MediaList::resized()
     fileTree.setBounds (getLocalBounds());
 }
 
-void Library::MediaList::fileDoubleClicked (const File& file)
+void Library::MediaList::fileDoubleClicked (const juce::File& file)
 {
     player.setAuditionFile (file);
 }
 
-void Library::MediaList::fileClicked (const File&, const MouseEvent&)
+void Library::MediaList::fileClicked (const juce::File&, const juce::MouseEvent&)
 {
     player.stopAudition();
 }

@@ -1,0 +1,7 @@
+/home/elanda/JetBrains/apps/apps/CLion/ch-1/201.8743.17/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" /home/elanda/Documents/Development/Juce/Libraries/VideoExamples
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release

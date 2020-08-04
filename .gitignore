@@ -3,3 +3,4 @@
 **/JuceLibraryCode/
 **/!JuceLibraryCode/AppConfig.h
 libraries/build/
+/build/

@@ -26,33 +26,33 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 //==============================================================================
 /*
 */
-class TimeLine    : public Component,
-                    public DragAndDropTarget,
-                    public FileDragAndDropTarget,
-                    public TextDragAndDropTarget,
+class TimeLine    : public juce::Component,
+                    public juce::DragAndDropTarget,
+                    public juce::FileDragAndDropTarget,
+                    public juce::TextDragAndDropTarget,
                     public foleys::TimeCodeAware::Listener,
-                    public ValueTree::Listener
+                    public juce::ValueTree::Listener
 {
 public:
     TimeLine (foleys::VideoEngine& videoEngine, Player& player, Properties& properies);
     ~TimeLine() override;
 
-    bool isInterestedInFileDrag (const StringArray& files) override;
-    void filesDropped (const StringArray& files, int x, int y) override;
+    bool isInterestedInFileDrag (const juce::StringArray& files) override;
+    void filesDropped (const juce::StringArray& files, int x, int y) override;
     bool isInterestedInDragSource (const SourceDetails &dragSourceDetails) override;
     void itemDropped (const SourceDetails &dragSourceDetails) override;
-    bool isInterestedInTextDrag (const String& text) override;
-    void textDropped (const String& text, int x, int y) override;
+    bool isInterestedInTextDrag (const juce::String& text) override;
+    void textDropped (const juce::String& text, int x, int y) override;
 
-    void mouseDown (const MouseEvent& event) override;
-    bool keyPressed (const KeyPress& key) override;
+    void mouseDown (const juce::MouseEvent& event) override;
+    bool keyPressed (const juce::KeyPress& key) override;
 
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
     void timecodeChanged (int64_t count, double seconds) override;
 
@@ -75,20 +75,20 @@ public:
                             private foleys::ClipDescriptor::Listener
     {
     public:
-        ClipComponent (TimeLine& tl, std::shared_ptr<foleys::ClipDescriptor> clip, ThreadPool& threadPool, bool video);
+        ClipComponent (TimeLine& tl, std::shared_ptr<foleys::ClipDescriptor> clip, juce::ThreadPool& threadPool, bool video);
         ~ClipComponent() override;
 
-        void paint (Graphics& g) override;
+        void paint (juce::Graphics& g) override;
         void resized() override;
 
         double getLeftTime() const;
         double getRightTime() const;
 
-        void mouseMove (const MouseEvent& event) override;
-        void mouseDown (const MouseEvent& event) override;
-        void mouseDrag (const MouseEvent& event) override;
-        void mouseUp (const MouseEvent& event) override;
-        bool keyPressed (const KeyPress& key) override;
+        void mouseMove (const juce::MouseEvent& event) override;
+        void mouseDown (const juce::MouseEvent& event) override;
+        void mouseDrag (const juce::MouseEvent& event) override;
+        void mouseUp (const juce::MouseEvent& event) override;
+        bool keyPressed (const juce::KeyPress& key) override;
 
         bool isInterestedInDragSource (const SourceDetails &dragSourceDetails) override;
         void itemDragEnter (const SourceDetails &dragSourceDetails) override;
@@ -109,13 +109,13 @@ public:
 
             void setColour (juce::Colour colour);
 
-            void paint (Graphics& g) override;
+            void paint (juce::Graphics& g) override;
 
             bool hitTest (int x, int y) override;
 
-            void mouseDown (const MouseEvent&) override;
-            void mouseDrag (const MouseEvent&) override;
-            void mouseUp (const MouseEvent&) override;
+            void mouseDown (const juce::MouseEvent&) override;
+            void mouseDrag (const juce::MouseEvent&) override;
+            void mouseUp (const juce::MouseEvent&) override;
 
             void processorControllerAdded() override {}
             void processorControllerToBeDeleted (const foleys::ProcessorController*) override {}
@@ -157,9 +157,9 @@ public:
         TimeLine& timeline;
         std::unique_ptr<foleys::FilmStrip>  filmstrip;
         std::unique_ptr<foleys::AudioStrip> audiostrip;
-        ComboBox processorSelect;
-
-        Point<int> localDragStart;
+        juce::ComboBox processorSelect;
+    
+        juce::Point<int> localDragStart;
         DragMode dragmode = notDragging;
         bool highlight    = false;
         bool wasSelected  = false;
@@ -184,9 +184,9 @@ public:
     {
     public:
         TimeMarker() = default;
-        void paint (Graphics& g)
+        void paint (juce::Graphics& g)
         {
-            g.setColour (Colours::red);
+            g.setColour (juce::Colours::red);
             g.drawVerticalLine (1, 0, getHeight());
         }
     private:

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="JUCE"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\libraries\;CMake Files\libraries\jaut\;CMake Files\libraries\jaut\modules\;CMake Files\libraries\juce\;CMake Files\libraries\juce\extras\;CMake Files\libraries\juce\extras\Build\;CMake Files\libraries\juce\extras\Build\CMake\;CMake Files\libraries\juce\extras\Build\juceaide\;CMake Files\libraries\juce\modules\;CMake Files\cmake-build-release\;CMake Files\cmake-build-release\libraries\;CMake Files\cmake-build-release\libraries\juce\;CMake Files\cmake-build-release\libraries\juce\tools\;CMake Files\Resources\;CMake Files\modules\;CMake Files\VideoEditor\;CMake Files\VideoEditor\Source\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/jaut/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\jaut\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/jaut/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\jaut\modules\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\juce\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/extras/Build/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\juce\extras\Build\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/extras/Build/CMake/JUCEConfig.cmake.in">
+			<Option virtualFolder="CMake Files\libraries\juce\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/extras/Build/CMake/JUCEHelperTargets.cmake">
+			<Option virtualFolder="CMake Files\libraries\juce\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/extras/Build/CMake/JUCEUtils.cmake">
+			<Option virtualFolder="CMake Files\libraries\juce\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/extras/Build/juceaide/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\juce\extras\Build\juceaide\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/libraries/juce/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libraries\juce\modules\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/cmake-build-release/libraries/juce/tools/JUCEToolsExport.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-release\libraries\juce\tools\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/Resources/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Resources\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\modules\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/VideoEditor/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\VideoEditor\"/>
+		</Unit>
+		<Unit filename="/home/elanda/Documents/Development/Juce/Libraries/VideoExamples/VideoEditor/Source/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\VideoEditor\Source\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -24,24 +24,25 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "Player.h"
 #include "Library.h"
 #include "Properties.h"
 #include "TimeLine.h"
 #include "TransportControl.h"
 
+#include <ff_meters/ff_meters.h>
+#include <jaut_gui/jaut_gui.h>
+
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent   : public Component,
-                        public DragAndDropContainer,
-                        private ApplicationCommandTarget,
-                        public MenuBarModel,
-                        private Timer
+class MainComponent   : public juce::Component,
+                        public juce::DragAndDropContainer,
+                        private juce::ApplicationCommandTarget,
+                        public juce::MenuBarModel,
+                        private juce::Timer
 {
 public:
     //==============================================================================
@@ -49,7 +50,7 @@ public:
     ~MainComponent() override;
 
     //==============================================================================
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
     void setViewerFullScreen (bool shouldBeFullScreen);
@@ -57,18 +58,18 @@ public:
     void timerCallback() override;
 
     ApplicationCommandTarget* getNextCommandTarget() override { return nullptr; }
-    void getAllCommands (Array<CommandID>& commands) override;
-    void getCommandInfo (CommandID commandID, ApplicationCommandInfo& result) override;
+    void getAllCommands (juce::Array<juce::CommandID>& commands) override;
+    void getCommandInfo (juce::CommandID commandID, juce::ApplicationCommandInfo& result) override;
     bool perform (const InvocationInfo& info) override;
-
-    StringArray getMenuBarNames() override;
-    PopupMenu getMenuForIndex (int topLevelMenuIndex,
-                               const String& menuName) override;
+    
+    juce::StringArray getMenuBarNames() override;
+    juce::PopupMenu getMenuForIndex (int topLevelMenuIndex,
+                                     const juce::String& menuName) override;
     void menuItemSelected (int, int) override {}
+    
+    juce::KeyPressMappingSet* getKeyMappings() const;
 
-    KeyPressMappingSet* getKeyMappings() const;
-
-    void loadEditFile (const File& file);
+    void loadEditFile (const juce::File& file);
 
     bool handleQuitRequest();
 
@@ -85,26 +86,29 @@ private:
     void updateTitleBar();
 
     //==============================================================================
-
-    AudioDeviceManager    deviceManager;
+    juce::AudioDeviceManager    deviceManager;
     foleys::VideoEngine   videoEngine;
     foleys::ClipRenderer  renderer { videoEngine };
+    
+    juce::ApplicationCommandManager   commandManager;
 
-    ApplicationCommandManager   commandManager;
-
+    juce::Component previewContainer;
+    
+    jaut::MultiPagePane multiTabPane;
+    
     foleys::VideoPreview  preview;
     Player                player  { deviceManager, videoEngine, preview };
 
     Library               library    { player, videoEngine };
     Properties            properties;
-    Viewport              viewport;
+    juce::Viewport        viewport;
     TimeLine              timeline   { videoEngine, player, properties };
     TransportControl      transport  { player };
-
+    
     foleys::LevelMeterLookAndFeel   lmLookAndFeel;
     foleys::LevelMeter              levelMeter;
-
-    File editFileName;
+    
+    juce::File editFileName;
     int  lowerPart = 0;
     bool viewerFullScreen = false;
 

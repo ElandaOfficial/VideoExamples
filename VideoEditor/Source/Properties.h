@@ -26,22 +26,22 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 class Player;
 
 //==============================================================================
 /*
 */
-class Properties    : public Component
+class Properties    : public juce::Component
 {
 public:
     Properties();
 
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
-    void showProperties (std::unique_ptr<Component> component);
+    void showProperties (std::unique_ptr<juce::Component> component);
 
     void showClipProperties (foleys::VideoEngine& engine, std::shared_ptr<foleys::ClipDescriptor> clip, Player& player, bool video);
 
@@ -49,7 +49,7 @@ public:
 
 private:
 
-    std::unique_ptr<Component> component;
+    std::unique_ptr<juce::Component> component;
     juce::TextButton close { "X" };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Properties)

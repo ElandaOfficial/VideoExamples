@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+821360aea68bc9e9708cacc6ef6c711f Resources/juce_binarydata_AppResources/JuceLibraryCode/BinaryData.h

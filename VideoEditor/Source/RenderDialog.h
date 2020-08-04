@@ -26,13 +26,13 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 //==============================================================================
 /*
 */
-class RenderDialog    : public Component,
-                        private Timer
+class RenderDialog    : public juce::Component,
+                        private juce::Timer
 {
 public:
     RenderDialog (foleys::ClipRenderer& renderer);
@@ -46,13 +46,13 @@ private:
     void updateGUI();
 
     foleys::ClipRenderer& renderer;
-
-    Label       filename;
-    TextButton  browse { NEEDS_TRANS ("Browse") };
-    double      progress = 0.0;
-    ProgressBar progressBar { progress };
-    TextButton  cancel { NEEDS_TRANS ("Cancel") };
-    TextButton  start  { NEEDS_TRANS ("Start") };
+    
+    juce::Label       filename;
+    juce::TextButton  browse { NEEDS_TRANS ("Browse") };
+    double            progress = 0.0;
+    juce::ProgressBar progressBar { progress };
+    juce::TextButton  cancel { NEEDS_TRANS ("Cancel") };
+    juce::TextButton  start  { NEEDS_TRANS ("Start") };
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RenderDialog)

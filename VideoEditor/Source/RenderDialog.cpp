@@ -24,15 +24,14 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "RenderDialog.h"
 
 //==============================================================================
 RenderDialog::RenderDialog (foleys::ClipRenderer& rendererToUse) : renderer (rendererToUse)
 {
-    filename.setColour (Label::outlineColourId, Colours::silver);
+    filename.setColour (juce::Label::outlineColourId, juce::Colours::silver);
     addAndMakeVisible (filename);
-    browse.setConnectedEdges (TextButton::ConnectedOnLeft);
+    browse.setConnectedEdges (juce::TextButton::ConnectedOnLeft);
     addAndMakeVisible (browse);
     addAndMakeVisible (progressBar);
     addAndMakeVisible (cancel);
@@ -44,9 +43,9 @@ RenderDialog::RenderDialog (foleys::ClipRenderer& rendererToUse) : renderer (ren
     {
         if (renderer.getOutputFile().existsAsFile())
         {
-            auto answer = AlertWindow::showOkCancelBox (AlertWindow::WarningIcon,
-                                                        NEEDS_TRANS ("Overwrite existing file?"),
-                                                        NEEDS_TRANS ("The file \"" + renderer.getOutputFile().getFileName() + "\" exists. Do you want to overwrite it?"));
+            auto answer = juce::AlertWindow::showOkCancelBox (juce::AlertWindow::WarningIcon,
+                                                              NEEDS_TRANS ("Overwrite existing file?"),
+                                                              NEEDS_TRANS ("The file \"" + renderer.getOutputFile().getFileName() + "\" exists. Do you want to overwrite it?"));
             if (answer)
                 renderer.getOutputFile().deleteFile();
             else
@@ -65,9 +64,9 @@ RenderDialog::RenderDialog (foleys::ClipRenderer& rendererToUse) : renderer (ren
     };
     browse.onClick = [&]
     {
-        FileChooser myChooser ("Please select the project you want to save...",
-                               File::getSpecialLocation (File::userMoviesDirectory),
-                               "*.mp4");
+      juce::FileChooser myChooser ("Please select the project you want to save...",
+                                   juce::File::getSpecialLocation (juce::File::userMoviesDirectory),
+                                   "*.mp4");
         if (myChooser.browseForFileToSave (false))
         {
             auto newFileName = myChooser.getResult();
@@ -105,7 +104,7 @@ void RenderDialog::resized()
 void RenderDialog::updateGUI()
 {
     auto rendering = renderer.isRendering();
-    filename.setText (renderer.getOutputFile().getFullPathName(), dontSendNotification);
+    filename.setText (renderer.getOutputFile().getFullPathName(), juce::dontSendNotification);
     filename.setEditable (! rendering);
     cancel.setEnabled (rendering);
     start.setEnabled (! rendering);

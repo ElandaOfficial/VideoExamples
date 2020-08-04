@@ -26,47 +26,47 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <foleys_video_engine/foleys_video_engine.h>
 
 class Player;
 
 //==============================================================================
 /*
 */
-class Library    : public Component
+class Library    : public juce::Component
 {
 public:
     Library (Player& player, foleys::VideoEngine& engine);
 
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
     class MediaList  : public Component,
-                       private FileBrowserListener
+                       private juce::FileBrowserListener
     {
     public:
-        MediaList (Player& player, TimeSliceThread& readThread, const File& root, std::unique_ptr<FileFilter> filter);
+        MediaList (Player& player, juce::TimeSliceThread& readThread, const juce::File& root, std::unique_ptr<juce::FileFilter> filter);
         ~MediaList() override;
 
         void resized() override;
 
         void selectionChanged() override {}
-        void fileClicked (const File &file, const MouseEvent &e) override;
-        void fileDoubleClicked (const File &file) override;
-        void browserRootChanged (const File &) override {}
+        void fileClicked (const juce::File &file, const juce::MouseEvent &e) override;
+        void fileDoubleClicked (const juce::File &file) override;
+        void browserRootChanged (const juce::File &) override {}
 
     private:
-        Player&                     player;
-        std::unique_ptr<FileFilter> filter;
-        DirectoryContentsList       contents;
-        FileTreeComponent           fileTree  { contents };
+        Player&                           player;
+        std::unique_ptr<juce::FileFilter> filter;
+        juce::DirectoryContentsList       contents;
+        juce::FileTreeComponent           fileTree  { contents };
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MediaList)
     };
 private:
-    TimeSliceThread directoryThread { "Directory read thread" };
-
-    TabbedComponent tabs { TabbedButtonBar::TabsAtTop };
+    juce::TimeSliceThread directoryThread { "Directory read thread" };
+    
+    juce::TabbedComponent tabs { juce::TabbedButtonBar::TabsAtTop };
 
     foleys::VideoEngine& videoEngine;
 

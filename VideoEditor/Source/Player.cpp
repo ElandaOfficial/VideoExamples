@@ -24,11 +24,10 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Player.h"
 
 //==============================================================================
-Player::Player (AudioDeviceManager& deviceManagerToUse,
+Player::Player (juce::AudioDeviceManager& deviceManagerToUse,
                 foleys::VideoEngine& engine,
                 foleys::VideoPreview& previewToUse)
   : deviceManager (deviceManagerToUse),
@@ -67,7 +66,7 @@ void Player::setPosition (double pts)
         stopAudition();
 
     if (clip)
-        clip->setNextReadPosition (int64 (pts * getSampleRate()));
+        clip->setNextReadPosition (juce::int64 (pts * getSampleRate()));
 
     sendChangeMessage();
 }
@@ -78,7 +77,7 @@ void Player::nextFrame()
         return;
 
     auto samples = clip->getNextReadPosition();
-    clip->setNextReadPosition (int64 (samples + clip->getFrameDurationInSeconds() * getSampleRate()));
+    clip->setNextReadPosition (juce::int64 (samples + clip->getFrameDurationInSeconds() * getSampleRate()));
 }
 
 void Player::previousFrame()
@@ -87,7 +86,7 @@ void Player::previousFrame()
         return;
 
     auto samples = clip->getNextReadPosition();
-    clip->setNextReadPosition (int64 (samples - clip->getFrameDurationInSeconds() * getSampleRate()));
+    clip->setNextReadPosition (juce::int64 (samples - clip->getFrameDurationInSeconds() * getSampleRate()));
 }
 
 double Player::getCurrentTimeInSeconds() const
@@ -121,17 +120,17 @@ void Player::setClip (std::shared_ptr<foleys::AVClip> clipToUse, bool needsPrepa
     sendChangeMessage();
 }
 
-void Player::setAuditionFile (const File& file)
+void Player::setAuditionFile (const juce::File& file)
 {
     auto* reader = videoEngine.getAudioFormatManager().createReaderFor (file);
     if (reader != nullptr)
     {
         auto sampleRate = reader->sampleRate;
-        setAuditionSource (std::make_unique<AudioFormatReaderSource>(reader, true), sampleRate);
+        setAuditionSource (std::make_unique<juce::AudioFormatReaderSource>(reader, true), sampleRate);
     }
 }
 
-void Player::setAuditionSource (std::unique_ptr<PositionableAudioSource> source, double sampleRate)
+void Player::setAuditionSource (std::unique_ptr<juce::PositionableAudioSource> source, double sampleRate)
 {
     transportSource.stop();
     auditionTransport.setSource (nullptr);

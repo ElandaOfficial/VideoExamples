@@ -26,16 +26,17 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <ff_meters/ff_meters.h>
+#include <foleys_video_engine/foleys_video_engine.h>
 
 //==============================================================================
 /*
 */
-class Player  : public ChangeBroadcaster,
-                public ChangeListener
+class Player  : public juce::ChangeBroadcaster,
+                public juce::ChangeListener
 {
 public:
-    Player (AudioDeviceManager& deviceManager, foleys::VideoEngine& engine, foleys::VideoPreview& preview);
+    Player (juce::AudioDeviceManager& deviceManager, foleys::VideoEngine& engine, foleys::VideoPreview& preview);
     ~Player() override;
 
     void setClip (std::shared_ptr<foleys::AVClip> clip, bool needsPrepare);
@@ -50,8 +51,8 @@ public:
 
     double getCurrentTimeInSeconds() const;
 
-    void setAuditionFile (const File& file);
-    void setAuditionSource (std::unique_ptr<PositionableAudioSource> source, double sampleRate);
+    void setAuditionFile (const juce::File& file);
+    void setAuditionSource (std::unique_ptr<juce::PositionableAudioSource> source, double sampleRate);
     void stopAudition();
     bool isAuditioning() const;
 
@@ -64,30 +65,30 @@ public:
 
     void changeListenerCallback (ChangeBroadcaster* sender) override;
 
-    class MeasuredTransportSource : public AudioTransportSource
+    class MeasuredTransportSource : public juce::AudioTransportSource
     {
     public:
         MeasuredTransportSource() = default;
 
-        void getNextAudioBlock (const AudioSourceChannelInfo& info) override
+        void getNextAudioBlock (const juce::AudioSourceChannelInfo& info) override
         {
             AudioTransportSource::getNextAudioBlock (info);
 
             if (isPlaying())
             {
-                AudioBuffer<float> proxy (info.buffer->getArrayOfWritePointers(),
-                                          info.buffer->getNumChannels(),
-                                          info.startSample,
-                                          info.numSamples);
+                juce::AudioBuffer<float> proxy (info.buffer->getArrayOfWritePointers(),
+                                                info.buffer->getNumChannels(),
+                                                info.startSample,
+                                                info.numSamples);
                 meterSource.measureBlock (proxy);
             }
 
             if (clipOutput)
             {
                 for (int channel = 0; channel < info.buffer->getNumChannels(); ++channel)
-                    FloatVectorOperations::clip (info.buffer->getWritePointer (channel, info.startSample),
-                                                 info.buffer->getReadPointer (channel, info.startSample),
-                                                 -1.0f, 1.0f, info.numSamples);
+                    juce::FloatVectorOperations::clip (info.buffer->getWritePointer (channel, info.startSample),
+                                                       info.buffer->getReadPointer (channel, info.startSample),
+                                                       -1.0f, 1.0f, info.numSamples);
             }
         }
 
@@ -99,14 +100,14 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MeasuredTransportSource)
     };
 private:
-    AudioDeviceManager& deviceManager;
+    juce::AudioDeviceManager& deviceManager;
     foleys::VideoEngine& videoEngine;
 
-    juce::MixerAudioSource      mixingSource;
+    juce::MixerAudioSource          mixingSource;
     std::shared_ptr<foleys::AVClip> clip;
-    MeasuredTransportSource     transportSource;
-    AudioSourcePlayer           sourcePlayer;
-    foleys::VideoPreview&       preview;
+    MeasuredTransportSource         transportSource;
+    juce::AudioSourcePlayer         sourcePlayer;
+    foleys::VideoPreview&           preview;
 
     std::unique_ptr<juce::PositionableAudioSource> auditionSource;
     juce::AudioTransportSource  auditionTransport;

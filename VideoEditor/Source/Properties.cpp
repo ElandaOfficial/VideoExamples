@@ -24,7 +24,6 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Properties.h"
 #include "ClipProperties.h"
 
@@ -40,12 +39,12 @@ Properties::Properties()
     };
 }
 
-void Properties::paint (Graphics& g)
+void Properties::paint (juce::Graphics& g)
 {
-    auto background = getLookAndFeel().findColour (ResizableWindow::backgroundColourId);
+    auto background = getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId);
     g.fillAll (background);   // clear the background
-    g.setColour (Colours::silver);
-    g.drawFittedText (NEEDS_TRANS ("Properties"), getLocalBounds().withHeight (38).reduced (10, 3), Justification::left, 1);
+    g.setColour (juce::Colours::silver);
+    g.drawFittedText (NEEDS_TRANS ("Properties"), getLocalBounds().withHeight (38).reduced (10, 3), juce::Justification::left, 1);
 
     if (component)
     {

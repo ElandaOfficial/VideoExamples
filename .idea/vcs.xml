@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/ffmpeg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/jaut" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/juce" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/x264" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/ff_meters" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/foleys_video_engine" vcs="Git" />
+  </component>
+</project>

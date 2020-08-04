@@ -24,6 +24,7 @@
 
 #include "MainComponent.h"
 #include "RenderDialog.h"
+#include "ColourDictionary.h"
 
 namespace CommandIDs
 {
@@ -56,36 +57,67 @@ namespace CommandIDs
     };
 }
 
-
 //==============================================================================
 MainComponent::MainComponent()
+    : multiTabPane(jaut::MultiPagePane::TabFactoryTemplates::Default::create(
+          [](const juce::String &id) -> std::unique_ptr<juce::Component>
+          {
+              if (id == "button")
+              {
+                  return std::make_unique<juce::TextButton>("SUM TEXT");
+              }
+              else if (id == "textbox")
+              {
+                  return std::make_unique<juce::TextEditor>();
+              }
+                
+              return nullptr;
+           })
+      )
 {
 //    levelMeter.setLookAndFeel (&lookAndFeel);
 //    lookAndFeel.setColour (FFAU::LevelMeter::lmBackgroundColour, getLookAndFeel().findColour (ResizableWindow::backgroundColourId).darker());
 //    lookAndFeel.setColour (FFAU::LevelMeter::lmTicksColour, Colours::silver);
 
-    addAndMakeVisible (library);
-    addAndMakeVisible (preview);
-    addAndMakeVisible (properties);
-    addAndMakeVisible (viewport);
-    addAndMakeVisible (transport);
-    addAndMakeVisible (levelMeter);
+    //addAndMakeVisible (library);
+    //addAndMakeVisible (preview);
+    //addAndMakeVisible (properties);
+    //addAndMakeVisible (viewport);
+    //addAndMakeVisible (transport);
+    //addAndMakeVisible (levelMeter);
 
+    multiTabPane.addPage("button",  "A button");
+    multiTabPane.addPage("textbox", "A textbox");
+    
+    jaut::MultiPagePane::Style style;
+    //style.tabBarLayout = jaut::MultiPagePane::Style::TabBarLayout::SideLeft;
+    
+    jaut::MultiPagePane::Options options;
+    options.pinnedTabBehaviour |= jaut::MultiPagePane::Options::PinBehaviour::PutInExtraRow;
+    options.allowTabReordering =  true;
+    
+    multiTabPane.setStyle(style);
+    multiTabPane.setOptions(options);
+    addAndMakeVisible(multiTabPane);
+    
     viewport.setViewedComponent (&timeline);
     timeline.setSize (2000, 510);
 
-    const auto area = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
+    const auto area = juce::Desktop::getInstance().getDisplays().getMainDisplay().userArea;
     setBounds (area);
 
     player.initialise();
-    lmLookAndFeel.setColour (foleys::LevelMeter::lmBackgroundColour, getLookAndFeel().findColour (ResizableWindow::backgroundColourId).darker());
-    lmLookAndFeel.setColour (foleys::LevelMeter::lmOutlineColour, Colours::transparentBlack);
-    lmLookAndFeel.setColour (foleys::LevelMeter::lmMeterOutlineColour, Colours::transparentBlack);
-    lmLookAndFeel.setColour (foleys::LevelMeter::lmTicksColour, Colours::silver);
+    lmLookAndFeel.setColour (foleys::LevelMeter::lmBackgroundColour, getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId).darker());
+    lmLookAndFeel.setColour (foleys::LevelMeter::lmOutlineColour, juce::Colours::transparentBlack);
+    lmLookAndFeel.setColour (foleys::LevelMeter::lmMeterOutlineColour, juce::Colours::transparentBlack);
+    lmLookAndFeel.setColour (foleys::LevelMeter::lmTicksColour, juce::Colours::silver);
     levelMeter.setLookAndFeel (&lmLookAndFeel);
     levelMeter.setMeterSource (&player.getMeterSource());
-
     resetEdit();
+
+    juce::LookAndFeel& lf = getLookAndFeel();
+    lf.setColour(AppColours::WindowBackgroundId, juce::Colour::fromString("#17223b"));
+    lf.setColour(AppColours::DockerBackgroundId, juce::Colour::fromString("#6b778d"));
 
     commandManager.registerAllCommandsForTarget (this);
     commandManager.setFirstCommandTarget (this);
@@ -95,7 +127,7 @@ MainComponent::MainComponent()
 
     commandManager.getKeyMappings()->resetToDefaultMappings();
 
-    auto settingsFolder = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory).getChildFile (ProjectInfo::companyName).getChildFile (ProjectInfo::projectName);
+    auto settingsFolder = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory).getChildFile (PROJECT_INFO_COMPANY).getChildFile (PROJECT_INFO_NAME);
     settingsFolder.createDirectory();
     videoEngine.getAudioPluginManager().setPluginDataFile (settingsFolder.getChildFile ("PluginList.xml"));
 
@@ -114,19 +146,23 @@ MainComponent::~MainComponent()
     levelMeter.setLookAndFeel (nullptr);
 }
 
-KeyPressMappingSet* MainComponent::getKeyMappings() const
+juce::KeyPressMappingSet* MainComponent::getKeyMappings() const
 {
     return commandManager.getKeyMappings();
 }
 
 //==============================================================================
 
-void MainComponent::paint (Graphics& g)
+void MainComponent::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    g.setColour (getLookAndFeel().findColour (ResizableWindow::backgroundColourId).darker());
+    const juce::LookAndFeel& lf = getLookAndFeel();
+    
+    g.fillAll (lf.findColour (AppColours::WindowBackgroundId));
+    
+    g.setColour (lf.findColour (juce::ResizableWindow::backgroundColourId).darker());
     g.fillRect (getLocalBounds().withTop (lowerPart));
-    g.setColour (Colours::grey);
+    
+    g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds());
 }
 
@@ -140,17 +176,19 @@ void MainComponent::resized()
     else
     {
         auto bounds = getLocalBounds().reduced (1);
-        lowerPart = juce::roundToInt (bounds.getHeight() * 0.4);
+        //lowerPart = juce::roundToInt (bounds.getHeight() * 0.4);
         auto lower  = bounds.removeFromBottom (lowerPart);
-        levelMeter.setBounds (lower.removeFromRight (120).reduced (2));
-        lower.removeFromTop (14); // TODO: ruler
-        viewport.setBounds (lower);
+        //levelMeter.setBounds (lower.removeFromRight (120).reduced (2));
+        //lower.removeFromTop (14); // TODO: ruler
+        //viewport.setBounds (lower);
         auto sides = juce::roundToInt (bounds.getWidth() / 4.0);
-        library.setBounds (bounds.removeFromLeft (sides));
-        properties.setBounds (bounds.removeFromRight (sides));
-        transport.setBounds (bounds.removeFromBottom (24));
-        preview.setBounds (bounds);
+        //library.setBounds (bounds.removeFromLeft (sides));
+        //properties.setBounds (bounds.removeFromRight (sides));
+        //transport.setBounds (bounds.removeFromBottom (24));
+        //previewContainer.setBounds (bounds);
     }
+    
+    multiTabPane.setBounds(getLocalBounds().withTrimmedRight(500));
 }
 
 void MainComponent::resetEdit()
@@ -160,7 +198,7 @@ void MainComponent::resetEdit()
 
     timeline.setEditClip (edit);
     edit->addTimecodeListener (&preview);
-    editFileName = File();
+    editFileName = juce::File();
     updateTitleBar();
 
     videoEngine.getUndoManager()->clearUndoHistory();
@@ -168,28 +206,28 @@ void MainComponent::resetEdit()
 
 void MainComponent::loadEdit()
 {
-    FileChooser myChooser ("Please select the project you want to save...",
-                           File::getSpecialLocation (File::userMoviesDirectory),
-                           "*.videdit");
+    juce::FileChooser myChooser ("Please select the project you want to save...",
+                                 juce::File::getSpecialLocation (juce::File::userMoviesDirectory),
+                                 "*.videdit");
     if (myChooser.browseForFileToOpen())
     {
         loadEditFile (myChooser.getResult());
     }
 }
 
-void MainComponent::loadEditFile (const File& file)
+void MainComponent::loadEditFile (const juce::File& file)
 {
-    auto xml = XmlDocument::parse (file);
+    auto xml = juce::XmlDocument::parse (file);
     if (xml.get() == nullptr)
     {
-        AlertWindow::showMessageBox (AlertWindow::WarningIcon,
-                                     NEEDS_TRANS ("Loading failed"),
-                                     "Loading of the file \"" + file.getFullPathName() + "\" failed.");
+        juce::AlertWindow::showMessageBox (juce::AlertWindow::WarningIcon,
+                                           NEEDS_TRANS ("Loading failed"),
+                                           "Loading of the file \"" + file.getFullPathName() + "\" failed.");
         return;
     }
 
     editFileName = file;
-    auto tree = ValueTree::fromXml (*xml);
+    auto tree = juce::ValueTree::fromXml (*xml);
     auto edit = std::make_shared<foleys::ComposedClip>(videoEngine);
     videoEngine.manageLifeTime (edit);
 
@@ -213,9 +251,9 @@ void MainComponent::saveEdit (bool saveAs)
 
     if (saveAs || editFileName.getFullPathName().isEmpty())
     {
-        FileChooser myChooser ("Please select the project you want to save...",
-                               File::getSpecialLocation (File::userMoviesDirectory),
-                               "*.videdit");
+        juce::FileChooser myChooser ("Please select the project you want to save...",
+                                     juce::File::getSpecialLocation (juce::File::userMoviesDirectory),
+                                     "*.videdit");
         if (myChooser.browseForFileToSave (true))
         {
             editFileName = myChooser.getResult();
@@ -228,7 +266,7 @@ void MainComponent::saveEdit (bool saveAs)
 
     if (edit && editFileName.getFullPathName().isNotEmpty())
     {
-        FileOutputStream output (editFileName);
+        juce::FileOutputStream output (editFileName);
         if (output.openedOk())
         {
             edit->readPluginStatesIntoValueTree();
@@ -239,7 +277,7 @@ void MainComponent::saveEdit (bool saveAs)
         }
         else
         {
-            AlertWindow::showMessageBox (AlertWindow::WarningIcon, NEEDS_TRANS("Saving failed"), "Saving of file \"" + editFileName.getFullPathName() + "\" failed.");
+            juce::AlertWindow::showMessageBox (juce::AlertWindow::WarningIcon, NEEDS_TRANS("Saving failed"), "Saving of file \"" + editFileName.getFullPathName() + "\" failed.");
         }
         updateTitleBar();
     }
@@ -249,7 +287,7 @@ bool MainComponent::handleQuitRequest()
 {
     if (renderer.isRendering())
     {
-        if (AlertWindow::showOkCancelBox (AlertWindow::WarningIcon, NEEDS_TRANS("Quit application"), "Cancel rendering to quit?"))
+        if (juce::AlertWindow::showOkCancelBox (juce::AlertWindow::WarningIcon, NEEDS_TRANS("Quit application"), "Cancel rendering to quit?"))
             renderer.cancelRendering();
         else
             return false;
@@ -275,18 +313,18 @@ void MainComponent::deleteSelectedClip()
 
 void MainComponent::showPreferences()
 {
-    auto selector = std::make_unique<AudioDeviceSelectorComponent>(deviceManager, 0, 2, 2, 2, false, false, true, false);
+    auto selector = std::make_unique<juce::AudioDeviceSelectorComponent>(deviceManager, 0, 2, 2, 2, false, false, true, false);
     properties.showProperties (std::move (selector));
 }
 
 void MainComponent::updateTitleBar()
 {
-    if (auto* window = dynamic_cast<DocumentWindow*>(TopLevelWindow::getActiveTopLevelWindow()))
+    if (auto* window = dynamic_cast<juce::DocumentWindow*>(juce::TopLevelWindow::getActiveTopLevelWindow()))
     {
         if (editFileName.getFullPathName().isNotEmpty())
-            window->setName (ProjectInfo::projectName + String (": ") + editFileName.getFileNameWithoutExtension());
+            window->setName (PROJECT_INFO_NAME + juce::String (": ") + editFileName.getFileNameWithoutExtension());
         else
-            window->setName (ProjectInfo::projectName);
+            window->setName (PROJECT_INFO_NAME);
     }
 }
 
@@ -298,11 +336,11 @@ void MainComponent::setViewerFullScreen (bool shouldBeFullScreen)
 
 //==============================================================================
 
-void MainComponent::getAllCommands (Array<CommandID>& commands)
+void MainComponent::getAllCommands (juce::Array<juce::CommandID>& commands)
 {
-    commands.add (CommandIDs::fileNew, CommandIDs::fileOpen, CommandIDs::fileSave, CommandIDs::fileSaveAs, CommandIDs::fileRender, StandardApplicationCommandIDs::quit);
-    commands.add (StandardApplicationCommandIDs::undo, StandardApplicationCommandIDs::redo,
-                  StandardApplicationCommandIDs::del, StandardApplicationCommandIDs::copy, StandardApplicationCommandIDs::paste,
+    commands.add (CommandIDs::fileNew, CommandIDs::fileOpen, CommandIDs::fileSave, CommandIDs::fileSaveAs, CommandIDs::fileRender, juce::StandardApplicationCommandIDs::quit);
+    commands.add (juce::StandardApplicationCommandIDs::undo, juce::StandardApplicationCommandIDs::redo,
+                  juce::StandardApplicationCommandIDs::del, juce::StandardApplicationCommandIDs::copy, juce::StandardApplicationCommandIDs::paste,
                   CommandIDs::editSplice, CommandIDs::editVisibility, CommandIDs::editPreferences);
     commands.add (CommandIDs::playStart, CommandIDs::playStop, CommandIDs::playReturn);
     commands.add (CommandIDs::trackAdd, CommandIDs::trackRemove);
@@ -310,7 +348,7 @@ void MainComponent::getAllCommands (Array<CommandID>& commands)
     commands.add (CommandIDs::helpAbout, CommandIDs::helpHelp);
 }
 
-void MainComponent::getCommandInfo (CommandID commandID, ApplicationCommandInfo& result)
+void MainComponent::getCommandInfo (juce::CommandID commandID, juce::ApplicationCommandInfo& result)
 {
     auto categoryFile  = "file";
     auto categoryEdit  = "edit";
@@ -323,84 +361,84 @@ void MainComponent::getCommandInfo (CommandID commandID, ApplicationCommandInfo&
     {
         case CommandIDs::fileNew:
             result.setInfo ("New Project...", "Clear all and start fresh", categoryFile, 0);
-            result.defaultKeypresses.add (KeyPress ('n', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('n', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::fileOpen:
             result.setInfo ("Open Project...", "Select a project to open", categoryFile, 0);
-            result.defaultKeypresses.add (KeyPress ('o', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('o', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::fileSave:
             result.setInfo ("Save Project", "Save the current project", categoryFile, 0);
-            result.defaultKeypresses.add (KeyPress ('s', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('s', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::fileSaveAs:
             result.setInfo ("Save Project...", "Save the current project as new file", categoryFile, 0);
             break;
         case CommandIDs::fileRender:
             result.setInfo ("Render Project...", "Export the piece into an audio file", categoryFile, 0);
-            result.defaultKeypresses.add (KeyPress ('r', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('r', juce::ModifierKeys::commandModifier, 0));
             break;
-        case StandardApplicationCommandIDs::quit:
+        case juce::StandardApplicationCommandIDs::quit:
             result.setInfo ("Quit...", "Quit Application", categoryFile, 0);
-            result.defaultKeypresses.add (KeyPress ('q', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('q', juce::ModifierKeys::commandModifier, 0));
             break;
-        case StandardApplicationCommandIDs::undo:
+        case juce::StandardApplicationCommandIDs::undo:
             result.setInfo ("Undo", "Undo the last step", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('z', juce::ModifierKeys::commandModifier, 0));
             break;
-        case StandardApplicationCommandIDs::redo:
+        case juce::StandardApplicationCommandIDs::redo:
             result.setInfo ("Redo", "Redo the last undo step", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('z', juce::ModifierKeys::commandModifier | juce::ModifierKeys::shiftModifier, 0));
             break;
-        case StandardApplicationCommandIDs::del:
+        case juce::StandardApplicationCommandIDs::del:
             result.setInfo ("Delete", "Delete the selected gesture", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress (KeyPress::backspaceKey, ModifierKeys::noModifiers, 0));
+            result.defaultKeypresses.add (juce::KeyPress (juce::KeyPress::backspaceKey, juce::ModifierKeys::noModifiers, 0));
             break;
-        case StandardApplicationCommandIDs::copy:
+        case juce::StandardApplicationCommandIDs::copy:
             result.setInfo ("Copy", "Copy the selected gesture", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('c', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('c', juce::ModifierKeys::commandModifier, 0));
             break;
-        case StandardApplicationCommandIDs::paste:
+        case juce::StandardApplicationCommandIDs::paste:
             result.setInfo ("Paste", "Paste the gesture in the clipboard", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('v', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('v', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::editSplice:
             result.setInfo ("Splice", "Split selected clip at play position", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('b', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('b', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::editVisibility:
             result.setInfo ("Visible", "Toggle visibility or mute of the selected clip", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress ('v', ModifierKeys::noModifiers, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('v', juce::ModifierKeys::noModifiers, 0));
             break;
         case CommandIDs::editPreferences:
             result.setInfo ("Preferences", "Open the audio preferences", categoryEdit, 0);
-            result.defaultKeypresses.add (KeyPress (',', ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress (',', juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::playStart:
             result.setInfo ("Play", "Start/Pause playback", categoryPlay, 0);
-            result.defaultKeypresses.add (KeyPress (KeyPress::spaceKey, ModifierKeys::noModifiers, 0));
+            result.defaultKeypresses.add (juce::KeyPress (juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers, 0));
             break;
         case CommandIDs::playStop:
             result.setInfo ("Stop", "Stop playback", categoryPlay, 0);
             break;
         case CommandIDs::playReturn:
             result.setInfo ("Return", "Set playhead to begin", categoryPlay, 0);
-            result.defaultKeypresses.add (KeyPress (KeyPress::returnKey, ModifierKeys::noModifiers, 0));
+            result.defaultKeypresses.add (juce::KeyPress (juce::KeyPress::returnKey, juce::ModifierKeys::noModifiers, 0));
             break;
         case CommandIDs::trackAdd:
             result.setInfo ("Add Track", "Add a new AUX track", categoryTrack, 0);
-            result.defaultKeypresses.add (KeyPress ('t', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress ('t', juce::ModifierKeys::commandModifier | juce::ModifierKeys::shiftModifier, 0));
             break;
         case CommandIDs::trackRemove:
             result.setInfo ("Remove Track", "Remove an AUX track", categoryTrack, 0);
             break;
         case CommandIDs::viewFullScreen:
             result.setInfo ("Fullscreen", "Maximise Viewer", categoryView, 0);
-            result.defaultKeypresses.add (KeyPress (KeyPress::returnKey, ModifierKeys::commandModifier, 0));
+            result.defaultKeypresses.add (juce::KeyPress (juce::KeyPress::returnKey, juce::ModifierKeys::commandModifier, 0));
             break;
         case CommandIDs::viewExitFullScreen:
             result.setInfo ("Exit Fullscreen", "Normal viewer size", categoryView, 0);
-            result.defaultKeypresses.add (KeyPress (KeyPress::escapeKey, ModifierKeys::noModifiers, 0));
+            result.defaultKeypresses.add (juce::KeyPress (juce::KeyPress::escapeKey, juce::ModifierKeys::noModifiers, 0));
             break;
         case CommandIDs::helpAbout:
             result.setInfo ("About", "Show information about the program", categoryHelp, 0);
@@ -409,7 +447,7 @@ void MainComponent::getCommandInfo (CommandID commandID, ApplicationCommandInfo&
             result.setInfo ("Help", "Show help how to use the program", categoryHelp, 0);
             break;
         default:
-            JUCEApplication::getInstance()->getCommandInfo (commandID, result);
+            juce::JUCEApplication::getInstance()->getCommandInfo (commandID, result);
             break;
     }
 }
@@ -422,11 +460,11 @@ bool MainComponent::perform (const InvocationInfo& info)
         case CommandIDs::fileSave: saveEdit(false); break;
         case CommandIDs::fileSaveAs: saveEdit(true); break;
         case CommandIDs::fileRender: showRenderDialog(); break;
-        case StandardApplicationCommandIDs::quit: JUCEApplication::getInstance()->systemRequestedQuit(); break;
+        case juce::StandardApplicationCommandIDs::quit: juce::JUCEApplication::getInstance()->systemRequestedQuit(); break;
 
-        case StandardApplicationCommandIDs::undo: videoEngine.getUndoManager()->undo(); break;
-        case StandardApplicationCommandIDs::redo: videoEngine.getUndoManager()->redo(); break;
-        case StandardApplicationCommandIDs::del: deleteSelectedClip(); break;
+        case juce::StandardApplicationCommandIDs::undo: videoEngine.getUndoManager()->undo(); break;
+        case juce::StandardApplicationCommandIDs::redo: videoEngine.getUndoManager()->redo(); break;
+        case juce::StandardApplicationCommandIDs::del: deleteSelectedClip(); break;
         case CommandIDs::editSplice: timeline.spliceSelectedClipAtPlayPosition(); break;
         case CommandIDs::editVisibility: timeline.toggleVisibility(); break;
 
@@ -441,6 +479,7 @@ bool MainComponent::perform (const InvocationInfo& info)
 
         case CommandIDs::viewFullScreen: setViewerFullScreen (! viewerFullScreen); break;
         case CommandIDs::viewExitFullScreen: setViewerFullScreen (false); break;
+
         default:
             jassertfalse;
             break;
@@ -448,15 +487,15 @@ bool MainComponent::perform (const InvocationInfo& info)
     return true;
 }
 
-StringArray MainComponent::getMenuBarNames()
+juce::StringArray MainComponent::getMenuBarNames()
 {
     return {NEEDS_TRANS ("File"), NEEDS_TRANS ("Edit"), NEEDS_TRANS ("Play"), NEEDS_TRANS ("Track"), NEEDS_TRANS ("View"), NEEDS_TRANS ("Help")};
 }
 
-PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex,
-                                          const String&)
+juce::PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex,
+                                                const juce::String&)
 {
-    PopupMenu menu;
+    juce::PopupMenu menu;
     if (topLevelMenuIndex == 0)
     {
         menu.addCommandItem (&commandManager, CommandIDs::fileNew);
@@ -468,17 +507,17 @@ PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex,
         menu.addCommandItem (&commandManager, CommandIDs::fileRender);
 #if ! JUCE_MAC
         menu.addSeparator();
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::quit);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::quit);
 #endif
     }
     else if (topLevelMenuIndex == 1)
     {
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::undo);
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::redo);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::undo);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::redo);
         menu.addSeparator();
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::del);
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::copy);
-        menu.addCommandItem (&commandManager, StandardApplicationCommandIDs::paste);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::del);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::copy);
+        menu.addCommandItem (&commandManager, juce::StandardApplicationCommandIDs::paste);
         menu.addSeparator();
         menu.addCommandItem (&commandManager, CommandIDs::editSplice);
         menu.addCommandItem (&commandManager, CommandIDs::editVisibility);
@@ -511,7 +550,7 @@ PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex,
 
 void MainComponent::timerCallback()
 {
-    for (auto& source : Desktop::getInstance().getMouseSources())
+    for (auto& source : juce::Desktop::getInstance().getMouseSources())
         if (source.isDragging())
             return;
 

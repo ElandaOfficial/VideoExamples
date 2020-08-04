@@ -24,7 +24,6 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Player.h"
 #include "TransportControl.h"
 
@@ -48,8 +47,8 @@ TransportControl::TransportControl (Player& playerToUse)
         player.setPosition (0);
     };
 
-    zero.setConnectedEdges (TextButton::ConnectedOnRight);
-    play.setConnectedEdges (TextButton::ConnectedOnLeft);
+    zero.setConnectedEdges (juce::TextButton::ConnectedOnRight);
+    play.setConnectedEdges (juce::TextButton::ConnectedOnLeft);
 
     player.addChangeListener (this);
 }
@@ -59,13 +58,13 @@ TransportControl::~TransportControl()
     player.removeChangeListener (this);
 }
 
-void TransportControl::paint (Graphics& g)
+void TransportControl::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    g.setColour (Colours::silver);
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.setColour (juce::Colours::silver);
 
     auto bounds = getLocalBounds().reduced (1);
-    g.drawFittedText (foleys::timecodeToString (player.getCurrentTimeInSeconds()), bounds, Justification::right, 1);
+    g.drawFittedText (foleys::timecodeToString (player.getCurrentTimeInSeconds()), bounds, juce::Justification::right, 1);
 }
 
 void TransportControl::resized()
@@ -80,7 +79,7 @@ void TransportControl::timerCallback()
     repaint();
 }
 
-void TransportControl::changeListenerCallback (ChangeBroadcaster*)
+void TransportControl::changeListenerCallback (juce::ChangeBroadcaster*)
 {
     if (player.isPlaying())
     {
